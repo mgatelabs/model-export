@@ -119,35 +119,68 @@ public class Exporter {
         StringBuilder objBuilder = new StringBuilder();
 
 
+        objBuilder.append("/" + "/" + " Vertex Count = " + modifiedVertexes.size()).append("\n");
+        objBuilder.append("SCNVector3 positions[] = {").append("\r\n");
         javaBuilder.append("/" + "/" + " Vertex Count = " + modifiedVertexes.size()).append("\n");
-        javaBuilder.append("float [] vertexes = new float [] {").append("\n");
+        javaBuilder.append("float [] vertexes = new float [] {").append("\r\n");
         for (int i = 0; i < modifiedVertexes.size(); i++) {
-            if (i > 0) javaBuilder.append(", ");
+            if (i > 0) {
+                javaBuilder.append(", ").append("\r\n");;
+                objBuilder.append(",").append("\r\n");;
+            }
+            objBuilder.append("SCNVector3Make(").append(modifiedVertexes.get(i)).append(")");
             javaBuilder.append(modifiedVertexes.get(i));
-        }
-        javaBuilder.append("};\n");
 
-        javaBuilder.append("/" + "/" + " UV Count = " + modifiedTexturePoints.size());
-        javaBuilder.append("float [] texturePoints = new float [] {").append("\n");
+        }
+        javaBuilder.append("\r\n").append("};").append("\r\n").append("\r\n");
+        objBuilder.append("\r\n").append("};").append("\r\n").append("\r\n");
+
+        objBuilder.append("/" + "/" + " UV Count = " + modifiedTexturePoints.size()).append("\r\n");
+        objBuilder.append("float coords [] = {").append("\r\n");
+        javaBuilder.append("/" + "/" + " UV Count = " + modifiedTexturePoints.size()).append("\r\n");
+        javaBuilder.append("float [] texturePoints = new float [] {").append("\r\n");
         for (int i = 0; i < modifiedTexturePoints.size(); i++) {
-            if (i > 0) javaBuilder.append(", ");
+            if (i > 0) {
+                javaBuilder.append(", ");
+                objBuilder.append(",");
+            }
             String [] split = modifiedTexturePoints.get(i).split(",");
             javaBuilder.append(split[0]);
             javaBuilder.append(",");
             javaBuilder.append(1.0 - Float.parseFloat(split[1]) + "f");
+
+            objBuilder.append(split[0]);
+            objBuilder.append(",");
+            objBuilder.append(1.0 - Float.parseFloat(split[1]) + "f");
+            if (i % 2 == 1) {
+                javaBuilder.append("\r\n");
+                objBuilder.append("\r\n");
+            }
         }
-        javaBuilder.append("};");
+        javaBuilder.append("};\n\n").append("\r\n");
+        objBuilder.append("};").append("\r\n").append("\r\n");
 
 
-        javaBuilder.append("/" + "/" + " Face Count = " + faces.size() / 3);
-        javaBuilder.append("short [] faces = new short [] {");
+        objBuilder.append("/" + "/" + " Face Count = " + faces.size() / 3).append("\r\n");
+        objBuilder.append("int indices[] =  {").append("\r\n");
+
+        javaBuilder.append("/" + "/" + " Face Count = " + faces.size() / 3).append("\r\n");
+        javaBuilder.append("short [] faces = new short [] {").append("\r\n");
         for (int i = 0; i < faces.size(); i++) {
-            if (i > 0) javaBuilder.append(", ");
+            if (i > 0) {
+                javaBuilder.append(", ");
+                objBuilder.append(", ");
+            }
             javaBuilder.append(faces.get(i));
+            objBuilder.append(faces.get(i));
         }
-        javaBuilder.append("};").append("\n");
+        javaBuilder.append("};").append("\r\n").append("\r\n");
+        objBuilder.append("};").append("\r\n").append("\r\n");
 
-        writeFile(new File(filename + ".java"), javaBuilder.toString());
+        writeFile(new File(filename + ".java.txt"), javaBuilder.toString());
+        writeFile(new File(filename + ".objc.txt"), objBuilder.toString());
+
+
 
     }
 
